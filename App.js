@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { EmpresaController } from './controller/EmpresaController.js';
+//import { EmpresaController } from './controller/EmpresaController.js';
 import { PessoaController } from './controller/PessoaController.js';
 const app = express();
 
@@ -20,6 +20,6 @@ const app = express();
 
 app.use(express.json());
 app.use(PessoaController);
-app.use(EmpresaController);
+//app.use(EmpresaController);
 
 app.listen(process.env.PORT, () => console.log('Conectado ao banco'));
