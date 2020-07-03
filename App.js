@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { EmpresaRouter } from './routes/EmpresaRoutes.js';
+import { EmpresaController } from './controller/EmpresaController.js';
+import { PessoaController } from './controller/PessoaController.js';
 const app = express();
 
 (async () => {
@@ -18,6 +19,7 @@ const app = express();
 })();
 
 app.use(express.json());
-app.use(EmpresaRouter);
+app.use(PessoaController);
+app.use(EmpresaController);
 
 app.listen(process.env.PORT, () => console.log('Conectado ao banco'));

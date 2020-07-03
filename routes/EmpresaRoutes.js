@@ -1,16 +1,9 @@
 import express from 'express';
-import { Empresa } from '../model/Empresa.js';
+import { authMiddleware } from '../middlewares/auth.js';
 
-const app = express();
+const router = express.Router();
+router.use(authMiddleware);
 
-app.get('/student', async (_, res) => {
-  const empresas = await Empresa.find({});
+app.get('/empresa');
 
-  try {
-    res.send(empresas);
-  } catch (error) {
-    res.status(500).send('Erro aos listar as empresasa: ' + error);
-  }
-});
-
-export { app as EmpresaRouter };
+export { router as EmpresaRouter };
