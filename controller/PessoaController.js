@@ -1,24 +1,21 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { Pessoa } from '../model/Pessoa.js';
-import authConfig from '../config/auth.json';
+import { logger } from '../config/logger.js';
+import { gerarToken } from '../helpers/TokenHelper.js';
 
-const router = express.Router();
-
-router.get('/pessoa', async (_, res) => {
-  const pessoas = await Pessoa.find({});
-
+const findAll = async (_, res) => {
   try {
+    const pessoas = await Pessoa.find({});
+    logger.info(`Get /findAll pessoas - ${JSON.stringify(pessoas)}`);
     return res.send(pessoas);
   } catch (error) {
+    logger.info(`Get /findAll pessoas Error - ${error}`);
     return res
       .status(500)
       .send('Ocorreu um erro ao retornar as pessoas cadastradas: ' + error);
   }
-});
+};
 
-router.post('/pessoa', async (req, res) => {
+const create = async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -29,40 +26,14 @@ router.post('/pessoa', async (req, res) => {
 
     const pessoa = await Pessoa.create(req.body);
     pessoa.senha = undefined;
-
+    logger.info(`Post /create pessoa - ${JSON.stringify(pessoa)}`);
     return res.send({ pessoa, token: gerarToken({ id: pessoa._id }) });
   } catch (error) {
+    logger.info(`Post /create pessoa - ${error}`);
     return res
       .status(500)
       .send({ error: 'Ocorreu um erro durante a operação: ' + error });
   }
-});
+};
 
-function gerarToken(params = {}) {
-  return jwt.sign(params, authConfig.secret, {
-    expiresIn: 86400,
-  });
-}
-
-router.post('/autenticar', async (req, res) => {
-  const { email, senha } = req.body;
-  try {
-    const pessoa = await Pessoa.findOne({ email }).select('senha');
-
-    if (!pessoa)
-      return res.status(400).send({ Erro: 'Usuário não encontrado!' });
-
-    if (!(await bcrypt.compare(senha, pessoa.senha)))
-      return res.status(400).send({ Erro: 'Senha incorreta!' });
-
-    pessoa.senha = undefined;
-
-    return res.send({ pessoa, token: gerarToken({ id: pessoa._id }) });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ error: 'Ocorreu um erro durante sua requisição: ' + error });
-  }
-});
-
-export { router as PessoaController };
+export default { findAll, create };
